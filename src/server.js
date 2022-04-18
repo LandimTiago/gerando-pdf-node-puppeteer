@@ -1,11 +1,13 @@
+require("dotenv").config();
+
 const express = require("express");
 const ejs = require("ejs");
 const path = require("path");
 const pdf = require("html-pdf");
 const puppeteer = require("puppeteer");
-const { application } = require("express");
 
 const app = express();
+const env = process.env;
 
 const passengers = [
   {
@@ -40,7 +42,11 @@ const passengers = [
   },
 ];
 
-app.get("/pdf", async (req, res) => {
+app.get("/send-email", (req, res) => {
+  res.send("Email está sendo enviado, aguarde!");
+});
+
+app.get("/get-pdf", async (req, res) => {
   const browser = await puppeteer.launch({ headless: true });
   const page = await browser.newPage();
 
@@ -100,4 +106,4 @@ app.get("/", (req, res) => {
 //   });
 // });
 
-app.listen("3333");
+app.listen(env.PORT);

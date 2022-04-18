@@ -75,7 +75,7 @@ app.get("/", (req, res) => {
   });
 });
 
-// ROTA DESATIVADA POIS DEIXA O ARQUIVO EM PASTA LOCAL
+// ROTA DESATIVADA POIS SALVA O ARQUIVO EM PASTA LOCAL
 // app.get("/", (req, res) => {
 //   const filePath = path.join(__dirname, "/template/print.ejs");
 //   ejs.renderFile(filePath, { passengers }, (err, html) => {

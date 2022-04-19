@@ -42,10 +42,18 @@ const passengers = [
   },
 ];
 
-app.get("/send-email", (req, res) => {
-  res.send("Email está sendo enviado, aguarde!");
+// Rota retorna apenas relatorio em HTML
+app.get("/", (req, res) => {
+  const filePath = path.join(__dirname, "/template/print.ejs");
+
+  ejs.renderFile(filePath, { passengers }, (err, html) => {
+    if (err) res.send("Erro na leitura do arquivo", err);
+
+    return res.send(html);
+  });
 });
 
+// Rota faz download do arquivo em PDF
 app.get("/get-pdf", async (req, res) => {
   const browser = await puppeteer.launch({ headless: true });
   const page = await browser.newPage();
@@ -71,39 +79,34 @@ app.get("/get-pdf", async (req, res) => {
   return res.send(pdf);
 });
 
-app.get("/", (req, res) => {
-  const filePath = path.join(__dirname, "/template/print.ejs");
-
-  ejs.renderFile(filePath, { passengers }, (err, html) => {
-    if (err) res.send("Erro na leitura do arquivo", err);
-
-    return res.send(html);
-  });
+// Rota para envio de email atraves de servidor de testes
+app.get("/send-email", (req, res) => {
+  res.send("Email está sendo enviado, aguarde!");
 });
 
 // ROTA DESATIVADA POIS SALVA O ARQUIVO EM PASTA LOCAL
-// app.get("/", (req, res) => {
-//   const filePath = path.join(__dirname, "/template/print.ejs");
-//   ejs.renderFile(filePath, { passengers }, (err, html) => {
-//     if (err) res.send("Erro na leitura do arquivo", err);
+app.get("/save-pdf", (req, res) => {
+  const filePath = path.join(__dirname, "/template/print.ejs");
+  ejs.renderFile(filePath, { passengers }, (err, html) => {
+    if (err) res.send("Erro na leitura do arquivo", err);
 
-//     const options = {
-//       height: "11.25in",
-//       width: "8.5in",
-//       header: {
-//         height: "20mm",
-//       },
-//       footer: {
-//         height: "20mm",
-//       },
-//     };
+    const options = {
+      height: "11.25in",
+      width: "8.5in",
+      header: {
+        height: "20mm",
+      },
+      footer: {
+        height: "20mm",
+      },
+    };
 
-//     pdf.create(html, options).toFile("report.pdf", (err, result) => {
-//       if (err) res.send("Erro ao gerar o arquivo", err);
+    pdf.create(html, options).toFile("report.pdf", (err, result) => {
+      if (err) res.send("Erro ao gerar o arquivo", err);
 
-//       return res.send(html);
-//     });
-//   });
-// });
+      return res.send(html);
+    });
+  });
+});
 
 app.listen(env.PORT);
